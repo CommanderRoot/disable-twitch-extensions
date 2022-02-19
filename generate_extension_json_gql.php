@@ -6,6 +6,7 @@ $extensions = [];
 if(file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'twitch_extensions.json')) {
 	$extensions = json_decode(file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'twitch_extensions.json'), true); 
 }
+$old_extensions_count = count($extensions);
 $categories = [
 	'cbca1847-6448-409d-a0e2-03e0076a6165', // Extensions for Games
 	'd86ef964-5f30-441f-aff2-4eb824696656', // Schedule & Countdowns
@@ -80,5 +81,8 @@ foreach($categories as $category) {
 asort($extensions, SORT_NATURAL);
 
 file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . 'twitch_extensions.json', json_encode($extensions, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
+
+$new_extensions_count = count($extensions);
+echo 'Found '.($new_extensions_count - $old_extensions_count).' new extensions.'.PHP_EOL;
 
 echo 'Done!'.PHP_EOL;
