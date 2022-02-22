@@ -11,30 +11,30 @@ let extensions = {};
 
 function saveOptions(e) {
 	e.preventDefault();
-	if(isDev) console.log('Saving settings');
+	if (isDev) console.log('Saving settings');
 
 	// Update config before saving
 	config.disable = document.querySelector('#disable').value;
 
-	if(typeof browser !== 'undefined') { // Firefox
+	if (typeof browser !== 'undefined') { // Firefox
 		browser.storage.sync.set(config);
-	} else if(typeof chrome !== 'undefined') { // Chrome
+	} else if (typeof chrome !== 'undefined') { // Chrome
 		chrome.storage.sync.set(config);
 	}
 }
 
 function restoreOptions() {
 	function setCurrentChoices(result) {
-		if(isDev) console.log(result);
-		if(typeof result.disable === 'string') {
+		if (isDev) console.log(result);
+		if (typeof result.disable === 'string') {
 			config.disable = result.disable
 			document.querySelector('#disable').value = result.disable;
 		}
-		if(typeof result.allowList === 'object') {
+		if (typeof result.allowList === 'object') {
 			config.allowList = result.allowList;
 			renderAllowList();
 		}
-		if(typeof result.forbidList === 'object') {
+		if (typeof result.forbidList === 'object') {
 			config.forbidList = result.forbidList;
 			renderForbidList();
 		}
@@ -44,11 +44,11 @@ function restoreOptions() {
 		console.log(`Error: ${error}`);
 	}
 
-	if(typeof browser !== 'undefined') { // Firefox
+	if (typeof browser !== 'undefined') { // Firefox
 		let getting = browser.storage.sync.get();
 		getting.then(setCurrentChoices, onError);
-	} else if(typeof chrome !== 'undefined') { // Chrome
-		chrome.storage.sync.get({disable: 'all', allowList: {}, forbidList: {}}, (data) => {
+	} else if (typeof chrome !== 'undefined') { // Chrome
+		chrome.storage.sync.get({ disable: 'all', allowList: {}, forbidList: {} }, (data) => {
 			setCurrentChoices(data);
 		});
 	}
@@ -58,7 +58,7 @@ function fetchTwitchExtensions() {
 	fetch('https://twitch-tools.rootonline.de/twitch_extensions.php')
 		.then(response => response.json())
 		.then(data => {
-			if(isDev) console.log(data);
+			if (isDev) console.log(data);
 			extensions = data;
 			generateAddButtons();
 			// Re-render lists now that we have names for the IDs
@@ -69,7 +69,7 @@ function fetchTwitchExtensions() {
 
 function generateExtensionAddHTML(id) {
 	let html = '<select id="' + id + '"><option value=""></option>';
-	for(const [key, value] of Object.entries(extensions)) {
+	for (const [key, value] of Object.entries(extensions)) {
 		let opt = document.createElement('option');
 		opt.value = key;
 		opt.innerText = value;
@@ -100,7 +100,7 @@ function generateAddButtons() {
 
 function addAllowListEntry(e) {
 	e.preventDefault();
-	if(document.querySelector('#allowListAddSelect').value.length > 0) {
+	if (document.querySelector('#allowListAddSelect').value.length > 0) {
 		config.allowList[document.querySelector('#allowListAddSelect').value] = true;
 		saveOptions(e);
 		renderAllowList();
@@ -110,9 +110,9 @@ function addAllowListEntry(e) {
 
 function removeAllowListEntry(e) {
 	e.preventDefault();
-	if(typeof e.target.id !== 'undefined') {
+	if (typeof e.target.id !== 'undefined') {
 		let target = e.target.id.split('-', 2);
-		if(target.length == 2) {
+		if (target.length == 2) {
 			delete config.allowList[target[1]];
 			saveOptions(e);
 			renderAllowList();
@@ -122,7 +122,7 @@ function removeAllowListEntry(e) {
 
 function addForbidListEntry(e) {
 	e.preventDefault();
-	if(document.querySelector('#forbidListAddSelect').value.length > 0) {
+	if (document.querySelector('#forbidListAddSelect').value.length > 0) {
 		config.forbidList[document.querySelector('#forbidListAddSelect').value] = true;
 		saveOptions(e);
 		renderForbidList();
@@ -132,9 +132,9 @@ function addForbidListEntry(e) {
 
 function removeForbidListEntry(e) {
 	e.preventDefault();
-	if(typeof e.target.id !== 'undefined') {
+	if (typeof e.target.id !== 'undefined') {
 		let target = e.target.id.split('-', 2);
-		if(target.length == 2) {
+		if (target.length == 2) {
 			delete config.forbidList[target[1]];
 			saveOptions(e);
 			renderForbidList();
@@ -144,14 +144,14 @@ function removeForbidListEntry(e) {
 
 function renderAllowList() {
 	let html = '<table>';
-	for(const [key, value] of Object.entries(config.allowList)) {
+	for (const [key, value] of Object.entries(config.allowList)) {
 		html += '<tr>';
 		let td = document.createElement('td');
 		let a = document.createElement('a');
 		a.href = 'https://dashboard.twitch.tv/extensions/' + key;
 		a.target = '_blank';
 		a.rel = 'noopener';
-		if(typeof extensions[key] !== 'undefined') {
+		if (typeof extensions[key] !== 'undefined') {
 			a.innerText = extensions[key];
 		} else {
 			a.innerText = key;
@@ -172,14 +172,14 @@ function renderAllowList() {
 
 function renderForbidList() {
 	let html = '<table>';
-	for(const [key, value] of Object.entries(config.forbidList)) {
+	for (const [key, value] of Object.entries(config.forbidList)) {
 		html += '<tr>';
 		let td = document.createElement('td');
 		let a = document.createElement('a');
 		a.href = 'https://dashboard.twitch.tv/extensions/' + key;
 		a.target = '_blank';
 		a.rel = 'noopener';
-		if(typeof extensions[key] !== 'undefined') {
+		if (typeof extensions[key] !== 'undefined') {
 			a.innerText = extensions[key];
 		} else {
 			a.innerText = key;
