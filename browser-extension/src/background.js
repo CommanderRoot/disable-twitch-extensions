@@ -3,7 +3,7 @@
 // Debug console logging
 const isDev = false;
 // Default config
-let config = {
+const config = {
 	disable: 'all',
 	allowList: {},
 	forbidList: {},
@@ -52,7 +52,7 @@ function checkRequest(details) {
 // Firefox
 if (typeof browser !== 'undefined' && typeof browser.webRequest !== 'undefined') {
 	// Load current settings
-	let gettingSettings = browser.storage.sync.get();
+	const gettingSettings = browser.storage.sync.get();
 	gettingSettings.then((data) => {
 		if (typeof data.disable === 'string') {
 			config.disable = data.disable;
@@ -78,7 +78,7 @@ if (typeof browser !== 'undefined' && typeof browser.webRequest !== 'undefined')
 
 	// Listen for setting changes
 	browser.storage.onChanged.addListener(function (changes, namespace) {
-		for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+		for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
 			if (isDev) console.log(
 				`Storage key "${key}" in namespace "${namespace}" changed.`,
 				`Old value was "${oldValue}", new value is "${newValue}".`
@@ -120,7 +120,7 @@ if (typeof browser !== 'undefined' && typeof browser.webRequest !== 'undefined')
 
 	// Listen for setting changes
 	chrome.storage.onChanged.addListener(function (changes, namespace) {
-		for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+		for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
 			if (isDev) console.log(
 				`Storage key "${key}" in namespace "${namespace}" changed.`,
 				`Old value was "${oldValue}", new value is "${newValue}".`

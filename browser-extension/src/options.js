@@ -2,7 +2,7 @@
 
 // Debug console logging
 const isDev = false;
-let config = {
+const config = {
 	disable: document.querySelector('#disable').value,
 	allowList: {},
 	forbidList: {},
@@ -45,7 +45,7 @@ function restoreOptions() {
 	}
 
 	if (typeof browser !== 'undefined') { // Firefox
-		let getting = browser.storage.sync.get();
+		const getting = browser.storage.sync.get();
 		getting.then(setCurrentChoices, onError);
 	} else if (typeof chrome !== 'undefined') { // Chrome
 		chrome.storage.sync.get({ disable: 'all', allowList: {}, forbidList: {} }, (data) => {
@@ -70,7 +70,7 @@ function fetchTwitchExtensions() {
 function generateExtensionAddHTML(id) {
 	let html = '<select id="' + id + '"><option value=""></option>';
 	for (const [key, value] of Object.entries(extensions)) {
-		let opt = document.createElement('option');
+		const opt = document.createElement('option');
 		opt.value = key;
 		opt.innerText = value;
 		html += opt.outerHTML;
@@ -111,7 +111,7 @@ function addAllowListEntry(e) {
 function removeAllowListEntry(e) {
 	e.preventDefault();
 	if (typeof e.target.id !== 'undefined') {
-		let target = e.target.id.split('-', 2);
+		const target = e.target.id.split('-', 2);
 		if (target.length == 2) {
 			delete config.allowList[target[1]];
 			saveOptions(e);
@@ -133,7 +133,7 @@ function addForbidListEntry(e) {
 function removeForbidListEntry(e) {
 	e.preventDefault();
 	if (typeof e.target.id !== 'undefined') {
-		let target = e.target.id.split('-', 2);
+		const target = e.target.id.split('-', 2);
 		if (target.length == 2) {
 			delete config.forbidList[target[1]];
 			saveOptions(e);
@@ -144,10 +144,10 @@ function removeForbidListEntry(e) {
 
 function renderAllowList() {
 	let html = '<table>';
-	for (const [key, value] of Object.entries(config.allowList)) {
+	for (const [key, _value] of Object.entries(config.allowList)) {
 		html += '<tr>';
-		let td = document.createElement('td');
-		let a = document.createElement('a');
+		const td = document.createElement('td');
+		const a = document.createElement('a');
 		a.href = 'https://dashboard.twitch.tv/extensions/' + key;
 		a.target = '_blank';
 		a.rel = 'noopener';
@@ -158,7 +158,7 @@ function renderAllowList() {
 		}
 		td.innerHTML = a.outerHTML;
 		html += td.outerHTML;
-		let b = document.createElement('button');
+		const b = document.createElement('button');
 		b.className = 'remove-allow-button';
 		b.id = 'allow-' + key;
 		b.innerText = 'Remove';
@@ -172,10 +172,10 @@ function renderAllowList() {
 
 function renderForbidList() {
 	let html = '<table>';
-	for (const [key, value] of Object.entries(config.forbidList)) {
+	for (const [key, _value] of Object.entries(config.forbidList)) {
 		html += '<tr>';
-		let td = document.createElement('td');
-		let a = document.createElement('a');
+		const td = document.createElement('td');
+		const a = document.createElement('a');
 		a.href = 'https://dashboard.twitch.tv/extensions/' + key;
 		a.target = '_blank';
 		a.rel = 'noopener';
@@ -186,7 +186,7 @@ function renderForbidList() {
 		}
 		td.innerHTML = a.outerHTML;
 		html += td.outerHTML;
-		let b = document.createElement('button');
+		const b = document.createElement('button');
 		b.className = 'remove-forbid-button';
 		b.id = 'forbid-' + key;
 		b.innerText = 'Remove';
