@@ -6,22 +6,25 @@
 	</head>
 	<body>
 		<form>
-			<label for="disable">Disable:</label>
-			<select class="settings" id="disable" name="disable">
-				<option value="all">All</option>
-				<option value="allowlist">All except allowed</option>
-				<option value="forbidlist">None except forbidden</option>
-				<option value="none">None</option>
-			</select>
-			<br>
+			<div class="option">
+				<label for="disable">Disable:</label>
+				<select class="settings" id="disable" name="disable">
+					<option value="all">All</option>
+					<option value="allowlist">All except allowed</option>
+					<option value="forbidlist">None except forbidden</option>
+					<option value="none">None</option>
+				</select>
+			</div>
 
-			<br>
-			Allowed: <span id="allowlistAdd"></span>
-			<div id="allowList"></div>
+			<div class="option">
+				<label for="allowlistAdd">Allowed:</label> <span id="allowlistAdd"></span>
+				<div id="allowList"></div>
+			</div>
 
-			<br>
-			Forbidden: <span id="forbidlistAdd"></span>
-			<div id="forbidList"></div>
+			<div class="option">
+				<label for="forbidlistAdd">Forbidden:</label> <span id="forbidlistAdd"></span>
+				<div id="forbidList"></div>
+			</div>
 		</form>
 		<script src="options.js"></script>
 	</body>

@@ -1,3 +1,8 @@
 html, body {
 	width: 420px;
 }
+
+.option {
+	margin-top: 0.9em;
+	margin-bottom: 0.9em;
+}
