@@ -1,6 +1,6 @@
 {
 	"name": "Disable Twitch extensions",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"manifest_version": 2,
 	"description": "Be able to disable / hide / block all or only certain Twitch extensions on Twitch channels",
 	"homepage_url": "https://twitch-tools.rootonline.de/",
