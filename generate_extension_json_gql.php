@@ -16,6 +16,7 @@ $categories = [
 	'eb89b9c9-7acc-4731-b5f1-41dbcd64bb12', // Music
 	'51aa177b-797d-42bb-a8bc-b547551a650a', // Polling & Voting
 	'bb7763ca-d2d5-4b97-b202-c4785b729681', // Games in Extensions
+	'0d0392f0-f404-47ee-b1fd-bc3fb7fa9412', // Extensions On the Go
 ];
 
 $ch = curl_init('https://gql.twitch.tv/gql');
@@ -66,15 +67,22 @@ foreach($categories as $category) {
 			exit();
 		}
 
-		foreach($json_decode['data']['extensionCategory']['extensions']['edges'] as $extension) {
-			$cursor = $extension['cursor'];
-			$extensions[$extension['node']['clientID']] = $extension['node']['name'];
+		if(!isset($json_decode['data'], $json_decode['data']['extensionCategory'], $json_decode['data']['extensionCategory']['extensions'], $json_decode['data']['extensionCategory']['extensions']['edges'])) {
+			$cursor = '';
+			echo $curl_output.PHP_EOL;
+			// exit();
+		} else {
+			foreach($json_decode['data']['extensionCategory']['extensions']['edges'] as $extension) {
+				$cursor = $extension['cursor'];
+				$extensions[$extension['node']['clientID']] = $extension['node']['name'];
+			}
+
+			// Set cursor empty if we didn't have any extensions in this request
+			if(count($json_decode['data']['extensionCategory']['extensions']['edges']) == 0) {
+				$cursor = '';
+			}
 		}
 
-		// Set cursor empty if we didn't have any extensions in this request
-		if(count($json_decode['data']['extensionCategory']['extensions']['edges']) == 0) {
-			$cursor = '';
-		}
 	} while(!empty($cursor));
 }
 
