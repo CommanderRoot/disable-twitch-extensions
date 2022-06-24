@@ -68,16 +68,19 @@ function fetchTwitchExtensions() {
 }
 
 function generateExtensionAddHTML(id) {
-	let html = '<select id="' + id + '"><option value=""></option>';
+	const select = document.createElement('select'); 
+	select.id = id;
+
+	let html = '<option value=""></option>';
 	for (const [key, value] of Object.entries(extensions)) {
 		const opt = document.createElement('option');
 		opt.value = key;
 		opt.innerText = value;
 		html += opt.outerHTML;
 	}
-	html += '</select>';
+	select.innerHTML = html;
 
-	return html;
+	return select.outerHTML;
 }
 
 function generateAddButtons() {
