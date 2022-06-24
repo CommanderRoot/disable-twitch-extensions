@@ -33,7 +33,7 @@ if($json_decode === null) {
 foreach($json_decode['ext'] as $extension) {
 	$extensions[$extension['id']] = $extension['name'];
 }
-asort($extensions, SORT_NATURAL);
+asort($extensions, SORT_NATURAL|SORT_FLAG_CASE);
 
 file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . 'twitch_extensions.json', json_encode($extensions, JSON_UNESCAPED_UNICODE));
 

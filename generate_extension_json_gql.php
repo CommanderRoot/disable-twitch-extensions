@@ -86,7 +86,7 @@ foreach($categories as $category) {
 	} while(!empty($cursor));
 }
 
-asort($extensions, SORT_NATURAL);
+asort($extensions, SORT_NATURAL|SORT_FLAG_CASE);
 
 file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . 'twitch_extensions.json', json_encode($extensions, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
 
