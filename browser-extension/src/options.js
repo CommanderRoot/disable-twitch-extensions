@@ -55,7 +55,7 @@ function restoreOptions() {
 }
 
 function fetchTwitchExtensions() {
-	fetch('https://twitch-tools.rootonline.de/twitch_extensions.php')
+	fetch('https://twitch-tools.rootonline.de/twitch_extensions.php', { cache: 'no-cache' })
 		.then(response => response.json())
 		.then(data => {
 			if (isDev) console.log(data);
