@@ -8,7 +8,35 @@ const config = {
 	allowList: {},
 	forbidList: {},
 };
+let knownTwitchExtensions = {};
 
+
+function fetchKnownTwitchExtensions() {
+	fetch('https://twitch-tools.rootonline.de/twitch_extensions.php', { cache: 'no-cache' })
+		.then(response => response.json())
+		.then(data => {
+			if (isDev) console.log(data);
+			knownTwitchExtensions = data;
+		});
+}
+
+function reportUnknownExtension(extensionID) {
+	if (isDev) console.log('Reporting extension "' + extensionID + '" as unknown');
+	fetch('https://twitch-tools.rootonline.de/twitch_extensions.php', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded',
+		},
+		body: 'extensionID=' + encodeURIComponent(extensionID),
+	})
+		.then((response) => response.json())
+		.then((data) => {
+			if (isDev) console.log('Report success:', data);
+		})
+		.catch((error) => {
+			if (isDev) console.error('Report error:', error);
+		});
+}
 
 function checkRequest(details) {
 	if (isDev) console.log(details);
@@ -25,6 +53,12 @@ function checkRequest(details) {
 	const extensionID = url.hostname.split('.', 2)[0];
 	if (isDev) console.log(url);
 	if (isDev) console.log(extensionID);
+
+	// Check if we know this extension already (and report if we don't)
+	if (extensionID !== 'supervisor' && typeof knownTwitchExtensions[extensionID] === 'undefined' && Object.keys(knownTwitchExtensions).length > 0) {
+		if (isDev) console.log('Extension with ID: "' + extensionID + '" is not known to us!');
+		reportUnknownExtension(extensionID);
+	}
 
 	if ((config.disable === 'allowlist' || config.disable === 'forbidlist') && extensionID === 'supervisor') {
 		// Allow supervisor
@@ -136,3 +170,6 @@ if (typeof browser !== 'undefined' && typeof browser.webRequest !== 'undefined')
 		}
 	});
 }
+
+// Fetch currently known Twitch extensions
+fetchKnownTwitchExtensions();
