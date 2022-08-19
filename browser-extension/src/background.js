@@ -32,6 +32,7 @@ function reportUnknownExtension(extensionID) {
 		.then((response) => response.json())
 		.then((data) => {
 			if (isDev) console.log('Report success:', data);
+			knownTwitchExtensions[extensionID] = true;
 		})
 		.catch((error) => {
 			if (isDev) console.error('Report error:', error);
