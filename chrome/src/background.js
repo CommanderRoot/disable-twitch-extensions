@@ -22,6 +22,11 @@ function fetchKnownTwitchExtensions() {
 
 function reportUnknownExtension(extensionID) {
 	if (isDev) console.log('Reporting extension "' + extensionID + '" as unknown');
+
+	// Add extensionID to known array so we only report it once
+	knownTwitchExtensions[extensionID] = true;
+
+	// Do reporting HTTP request
 	fetch('https://twitch-tools.rootonline.de/twitch_extensions.php', {
 		method: 'POST',
 		headers: {
@@ -32,10 +37,10 @@ function reportUnknownExtension(extensionID) {
 		.then((response) => response.json())
 		.then((data) => {
 			if (isDev) console.log('Report success:', data);
-			knownTwitchExtensions[extensionID] = true;
 		})
 		.catch((error) => {
 			if (isDev) console.error('Report error:', error);
+			delete knownTwitchExtensions[extensionID];
 		});
 }
 
