@@ -116,12 +116,13 @@ browser.webRequest.onBeforeRequest.addListener(
 );
 
 // Listen for setting changes
-browser.storage.onChanged.addListener(function (changes, namespace) {
+browser.storage.onChanged.addListener((changes, namespace) => {
 	for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
-		if (isDev) console.log(
-			`Storage key "${key}" in namespace "${namespace}" changed.`,
-			`Old value was "${oldValue}", new value is "${newValue}".`
-		);
+		if (isDev)
+			console.log(
+				`Storage key "${key}" in namespace "${namespace}" changed.`,
+				`Old value was "${oldValue}", new value is "${newValue}".`
+			);
 
 		if (key === 'disable') {
 			config.disable = newValue;
