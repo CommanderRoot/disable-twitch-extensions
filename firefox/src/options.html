@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="options.css"/>
+	</head>
+	<body>
+		<form>
+			<div class="option">
+				<label for="disable">Disable:</label>
+				<select class="settings" id="disable" name="disable">
+					<option value="all">All</option>
+					<option value="allowlist">All except allowed</option>
+					<option value="forbidlist">None except forbidden</option>
+					<option value="none">None</option>
+				</select>
+			</div>
+
+			<div class="option">
+				<label for="allowlistAdd">Allowed:</label> <span id="allowlistAdd"></span>
+				<div id="allowList"></div>
+			</div>
+
+			<div class="option">
+				<label for="forbidlistAdd">Forbidden:</label> <span id="forbidlistAdd"></span>
+				<div id="forbidList"></div>
+			</div>
+		</form>
+		<script src="options.js"></script>
+	</body>
+</html>

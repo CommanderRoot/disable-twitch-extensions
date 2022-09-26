@@ -16,11 +16,7 @@ function saveOptions(e) {
 	// Update config before saving
 	config.disable = document.querySelector('#disable').value;
 
-	if (typeof browser !== 'undefined') { // Firefox
-		browser.storage.sync.set(config);
-	} else if (typeof chrome !== 'undefined') { // Chrome
-		chrome.storage.sync.set(config);
-	}
+	chrome.storage.sync.set(config);
 }
 
 function restoreOptions() {
@@ -40,18 +36,9 @@ function restoreOptions() {
 		}
 	}
 
-	function onError(error) {
-		console.log(`Error: ${error}`);
-	}
-
-	if (typeof browser !== 'undefined') { // Firefox
-		const getting = browser.storage.sync.get();
-		getting.then(setCurrentChoices, onError);
-	} else if (typeof chrome !== 'undefined') { // Chrome
-		chrome.storage.sync.get({ disable: 'all', allowList: {}, forbidList: {} }, (data) => {
-			setCurrentChoices(data);
-		});
-	}
+	chrome.storage.sync.get({ disable: 'all', allowList: {}, forbidList: {} }, (data) => {
+		setCurrentChoices(data);
+	});
 }
 
 function fetchTwitchExtensions() {
@@ -68,7 +55,7 @@ function fetchTwitchExtensions() {
 }
 
 function generateExtensionAddHTML(id) {
-	const select = document.createElement('select'); 
+	const select = document.createElement('select');
 	select.id = id;
 
 	let html = '<option value=""></option>';
@@ -91,7 +78,6 @@ function generateAddButtons() {
 	// Set page content
 	document.querySelector('#allowlistAdd').innerHTML = html;
 	document.querySelector('#allowListAddButton').addEventListener('click', addAllowListEntry);
-
 
 	html = generateExtensionAddHTML('forbidListAddSelect');
 	html += ' <button id="forbidListAddButton">Add</button>';

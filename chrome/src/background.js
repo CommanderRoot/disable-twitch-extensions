@@ -84,93 +84,49 @@ function checkRequest(details) {
 	return;
 }
 
-// Firefox
-if (typeof browser !== 'undefined' && typeof browser.webRequest !== 'undefined') {
-	// Load current settings
-	const gettingSettings = browser.storage.sync.get();
-	gettingSettings.then((data) => {
-		if (typeof data.disable === 'string') {
-			config.disable = data.disable;
-		}
-		if (typeof data.allowList === 'object') {
-			config.allowList = data.allowList;
-		}
-		if (typeof data.forbidList === 'object') {
-			config.forbidList = data.forbidList;
-		}
-	});
 
-	// Add listener for http requests
-	browser.webRequest.onBeforeRequest.addListener(
-		checkRequest,
-		{
-			urls: [
-				'https://*.ext-twitch.tv/*',
-			],
-		},
-		['blocking']
-	);
+// Load current settings
+chrome.storage.sync.get({ disable: 'all', allowList: {}, forbidList: {} }, (data) => {
+	if (typeof data.disable === 'string') {
+		config.disable = data.disable;
+	}
+	if (typeof data.allowList === 'object') {
+		config.allowList = data.allowList;
+	}
+	if (typeof data.forbidList === 'object') {
+		config.forbidList = data.forbidList;
+	}
+});
 
-	// Listen for setting changes
-	browser.storage.onChanged.addListener(function (changes, namespace) {
-		for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
-			if (isDev) console.log(
-				`Storage key "${key}" in namespace "${namespace}" changed.`,
-				`Old value was "${oldValue}", new value is "${newValue}".`
-			);
+// Add listener for http requests
+chrome.webRequest.onBeforeRequest.addListener(
+	checkRequest,
+	{
+		urls: [
+			'https://*.ext-twitch.tv/*',
+		],
+	},
+	['blocking']
+);
 
-			if (key === 'disable') {
-				config.disable = newValue;
-			} else if (key === 'allowList') {
-				config.allowList = newValue;
-			} else if (key === 'forbidList') {
-				config.forbidList = newValue;
-			}
-		}
-	});
-} else if (typeof chrome !== 'undefined' && typeof chrome.webRequest !== 'undefined') { // Chrome
-	// Load current settings
-	chrome.storage.sync.get({ disable: 'all', allowList: {}, forbidList: {} }, (data) => {
-		if (typeof data.disable === 'string') {
-			config.disable = data.disable;
-		}
-		if (typeof data.allowList === 'object') {
-			config.allowList = data.allowList;
-		}
-		if (typeof data.forbidList === 'object') {
-			config.forbidList = data.forbidList;
-		}
-	});
+// Listen for setting changes
+chrome.storage.onChanged.addListener(function (changes, namespace) {
+	for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
+		if (isDev) console.log(
+			`Storage key "${key}" in namespace "${namespace}" changed.`,
+			`Old value was "${oldValue}", new value is "${newValue}".`
+		);
 
-	// Add listener for http requests
-	chrome.webRequest.onBeforeRequest.addListener(
-		checkRequest,
-		{
-			urls: [
-				'https://*.ext-twitch.tv/*',
-			],
-		},
-		['blocking']
-	);
-
-	// Listen for setting changes
-	chrome.storage.onChanged.addListener(function (changes, namespace) {
-		for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
-			if (isDev) console.log(
-				`Storage key "${key}" in namespace "${namespace}" changed.`,
-				`Old value was "${oldValue}", new value is "${newValue}".`
-			);
-
-			if (key === 'disable') {
-				config.disable = newValue;
-			} else if (key === 'allowList') {
-				config.allowList = newValue;
-			} else if (key === 'forbidList') {
-				config.forbidList = newValue;
-			}
+		if (key === 'disable') {
+			config.disable = newValue;
+		} else if (key === 'allowList') {
+			config.allowList = newValue;
+		} else if (key === 'forbidList') {
+			config.forbidList = newValue;
 		}
-	});
-}
+	}
+});
+
 
 // Fetch currently known Twitch extensions
 fetchKnownTwitchExtensions();
