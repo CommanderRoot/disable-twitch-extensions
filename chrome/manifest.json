@@ -1,7 +1,7 @@
 {
 	"name": "Disable Twitch extensions",
-	"version": "0.4.0",
-	"manifest_version": 2,
+	"version": "0.5.0",
+	"manifest_version": 3,
 	"description": "Be able to disable / hide / block all or only certain Twitch extensions on Twitch channels",
 	"homepage_url": "https://twitch-tools.rootonline.de/",
 	"icons": {
@@ -12,22 +12,24 @@
 	},
 	"default_locale": "en",
 	"permissions": [
-		"webRequest",
-		"webRequestBlocking",
-		"storage",
+		"declarativeNetRequestWithHostAccess",
+		"storage"
+	],
+	"host_permissions": [
 		"https://*.ext-twitch.tv/*",
 		"https://player.twitch.tv/*",
 		"https://www.twitch.tv/*"
 	],
 	"background": {
-		"scripts": [
-			"src/background.js"
-		]
+		"service_worker": "src/background.js"
+	},
+	"content_security_policy": {
+		"extension_pages": "default-src 'self'; connect-src 'self' https://twitch-tools.rootonline.de"
 	},
 	"options_ui": {
 		"page": "src/options.html"
 	},
-	"browser_action": {
+	"action": {
 		"browser_style": false,
 		"default_popup": "src/options.html",
 		"default_icon": {
@@ -35,11 +37,6 @@
 			"32": "icons/icon32.png",
 			"48": "icons/icon48.png",
 			"128": "icons/icon128.png"
-		}
-	},
-	"browser_specific_settings": {
-		"gecko": {
-			"id": "disable-twitch-extensions@rootonline.de"
 		}
 	}
 }

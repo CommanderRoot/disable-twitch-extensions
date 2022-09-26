@@ -8,85 +8,93 @@ const config = {
 	allowList: {},
 	forbidList: {},
 };
-let knownTwitchExtensions = {};
 
 
-function fetchKnownTwitchExtensions() {
-	fetch('https://twitch-tools.rootonline.de/twitch_extensions.php', { cache: 'no-cache' })
-		.then(response => response.json())
-		.then(data => {
-			if (isDev) console.log(data);
-			knownTwitchExtensions = data;
-		});
-}
+async function setupDeclarativeNetRequest() {
+	// Get current ruleIDs
+	const currentRules = await chrome.declarativeNetRequest.getDynamicRules();
+	if (isDev) console.log('Current rules:', currentRules);
 
-function reportUnknownExtension(extensionID) {
-	if (isDev) console.log('Reporting extension "' + extensionID + '" as unknown');
+	let ruleID = 1;
+	let updateRuleOptions = {};
 
-	// Add extensionID to known array so we only report it once
-	knownTwitchExtensions[extensionID] = true;
-
-	// Do reporting HTTP request
-	fetch('https://twitch-tools.rootonline.de/twitch_extensions.php', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/x-www-form-urlencoded',
-		},
-		body: 'extensionID=' + encodeURIComponent(extensionID),
-	})
-		.then((response) => response.json())
-		.then((data) => {
-			if (isDev) console.log('Report success:', data);
-		})
-		.catch((error) => {
-			if (isDev) console.error('Report error:', error);
-			delete knownTwitchExtensions[extensionID];
-		});
-}
-
-function checkRequest(details) {
-	if (isDev) console.log(details);
-
-	if (config.disable === 'all') {
-		if (isDev) console.log('Canceling extension requests: ' + details.url);
-		return { cancel: true };
-	} else if (config.disable === 'none') {
-		// Do nothing if we disable none
-		return;
+	// Remove all current rules
+	if (currentRules.length > 0) {
+		let currentRuleIDs = [];
+		currentRules.forEach(rule => currentRuleIDs.push(rule.id));
+		updateRuleOptions['removeRuleIds'] = currentRuleIDs;
 	}
 
-	const url = new URL(details.url);
-	const extensionID = url.hostname.split('.', 2)[0];
-	if (isDev) console.log(url);
-	if (isDev) console.log(extensionID);
-
-	// Check if we know this extension already (and report if we don't)
-	if (extensionID !== 'supervisor' && typeof knownTwitchExtensions[extensionID] === 'undefined' && Object.keys(knownTwitchExtensions).length > 0) {
-		if (isDev) console.log('Extension with ID: "' + extensionID + '" is not known to us!');
-		reportUnknownExtension(extensionID);
+	if (config.disable === 'all' || config.disable === 'allowlist') {
+		// Block all requests
+		const rule = {
+			id: ruleID++,
+			action: {
+				type: 'block',
+			},
+			condition: {
+				urlFilter: '*.ext-twitch.tv/*',
+			},
+			priority: 1,
+		};
+		updateRuleOptions['addRules'] = [rule];
 	}
 
-	if ((config.disable === 'allowlist' || config.disable === 'forbidlist') && extensionID === 'supervisor') {
+	if (config.disable === 'allowlist') {
 		// Allow supervisor
-		return;
-	} else if (config.disable === 'allowlist') {
-		if (typeof config.allowList[extensionID] !== 'undefined' && config.allowList[extensionID] === true) {
-			return;
-		}
-		if (isDev) console.log('Canceling extension requests for "' + extensionID + '" as it is not in the allowed list: ' + details.url);
-		// Default forbid
-		return { cancel: true };
+		const rule = {
+			id: ruleID++,
+			action: {
+				type: 'allow',
+			},
+			condition: {
+				urlFilter: '||supervisor.ext-twitch.tv/*',
+			},
+			priority: 2,
+		};
+		updateRuleOptions['addRules'].push(rule);
+
+		// Allow each extension on the allowList
+		Object.keys(config.allowList).forEach(extensionID => {
+			const rule = {
+				id: ruleID++,
+				action: {
+					type: 'allow',
+				},
+				condition: {
+					urlFilter: '||' + extensionID + '.ext-twitch.tv/*',
+				},
+				priority: 2,
+			};
+			updateRuleOptions['addRules'].push(rule);
+		});
 	} else if (config.disable === 'forbidlist') {
-		if (typeof config.forbidList[extensionID] !== 'undefined' && config.forbidList[extensionID] === true) {
-			if (isDev) console.log('Canceling extension requests for "' + extensionID + '" as it is on the forbid list: ' + details.url);
-			return { cancel: true };
-		}
-		// Default allow
-		return;
+		updateRuleOptions['addRules'] = [];
+
+		// Block each extension on the forbidlist
+		Object.keys(config.forbidList).forEach(extensionID => {
+			const rule = {
+				id: ruleID++,
+				action: {
+					type: 'block',
+				},
+				condition: {
+					urlFilter: '||' + extensionID + '.ext-twitch.tv/*',
+				},
+				priority: 2,
+			};
+			updateRuleOptions['addRules'].push(rule);
+		});
 	}
 
-	// Do nothing if we get here for whatever reason
-	return;
+	if (isDev) console.log('New rules:', updateRuleOptions);
+
+	// Update ruleset
+	if (Object.keys(updateRuleOptions).length > 0) {
+		chrome.declarativeNetRequest.updateDynamicRules(
+			updateRuleOptions
+		);
+	}
 }
 
 
@@ -101,26 +109,20 @@ chrome.storage.sync.get({ disable: 'all', allowList: {}, forbidList: {} }, (data
 	if (typeof data.forbidList === 'object') {
 		config.forbidList = data.forbidList;
 	}
+
+	// Setup declarativeNetRequest config
+	setupDeclarativeNetRequest();
 });
 
-// Add listener for http requests
-chrome.webRequest.onBeforeRequest.addListener(
-	checkRequest,
-	{
-		urls: [
-			'https://*.ext-twitch.tv/*',
-		],
-	},
-	['blocking']
-);
 
 // Listen for setting changes
-chrome.storage.onChanged.addListener(function (changes, namespace) {
+chrome.storage.onChanged.addListener((changes, namespace) => {
 	for (const [key, { oldValue, newValue }] of Object.entries(changes)) {
-		if (isDev) console.log(
-			`Storage key "${key}" in namespace "${namespace}" changed.`,
-			`Old value was "${oldValue}", new value is "${newValue}".`
-		);
+		if (isDev)
+			console.log(
+				`Storage key "${key}" in namespace "${namespace}" changed.`,
+				`Old value was "${oldValue}", new value is "${newValue}".`
+			);
 
 		if (key === 'disable') {
 			config.disable = newValue;
@@ -130,8 +132,7 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
 			config.forbidList = newValue;
 		}
 	}
+
+	// Update declarativeNetRequest config
+	setupDeclarativeNetRequest();
 });
-
-
-// Fetch currently known Twitch extensions
-fetchKnownTwitchExtensions();
