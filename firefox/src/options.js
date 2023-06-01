@@ -58,7 +58,7 @@ function fetchTwitchExtensions() {
 }
 
 function generateExtensionAddHTML(id) {
-	const select = document.createElement('select'); 
+	const select = document.createElement('select');
 	select.id = id;
 
 	let html = '<option value=""></option>';
