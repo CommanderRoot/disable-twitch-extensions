@@ -63,6 +63,13 @@ function generateExtensionAddHTML(id) {
 
 	let html = '<option value=""></option>';
 	for (const [key, value] of Object.entries(extensions)) {
+		// Don't list already added extensions
+		if (
+			(id === 'allowListAddSelect' && typeof config.allowList[key] !== 'undefined') ||
+			(id === 'forbidListAddSelect' && typeof config.forbidList[key] !== 'undefined')) {
+			continue;
+		}
+
 		const opt = document.createElement('option');
 		opt.value = key;
 		opt.innerText = value;
@@ -89,7 +96,7 @@ function addAllowListEntry(e) {
 		config.allowList[document.querySelector('#allowListAddSelect').value] = true;
 		saveOptions(e);
 		renderAllowList();
-		document.querySelector('#allowListAddSelect').value = '';
+		generateAddButtons();
 	}
 }
 
@@ -101,6 +108,7 @@ function removeAllowListEntry(e) {
 			delete config.allowList[target[1]];
 			saveOptions(e);
 			renderAllowList();
+			generateAddButtons();
 		}
 	}
 }
@@ -111,7 +119,7 @@ function addForbidListEntry(e) {
 		config.forbidList[document.querySelector('#forbidListAddSelect').value] = true;
 		saveOptions(e);
 		renderForbidList();
-		document.querySelector('#forbidListAddSelect').value = '';
+		generateAddButtons();
 	}
 }
 
@@ -123,6 +131,7 @@ function removeForbidListEntry(e) {
 			delete config.forbidList[target[1]];
 			saveOptions(e);
 			renderForbidList();
+			generateAddButtons();
 		}
 	}
 }
