@@ -3,6 +3,22 @@ html, body {
 }
 
 .option {
-	margin-top: 0.9em;
-	margin-bottom: 0.9em;
+	margin-top: 0.9rem;
+	margin-bottom: 0.9rem;
+}
+
+table { 
+	width: 100%;
+}
+
+select {
+	width: 100%;
+}
+
+.pull-right-button { 
+	text-align: right;
+}
+
+.full-width {
+	width: 100%;
 }

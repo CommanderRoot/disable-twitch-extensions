@@ -74,21 +74,13 @@ function generateExtensionAddHTML(id) {
 }
 
 function generateAddButtons() {
-	let html = '';
-	html += generateExtensionAddHTML('allowListAddSelect');
-	html += ' <button id="allowListAddButton">Add</button>';
-
-	// Set page content
+	// Allow list select
+	let html = generateExtensionAddHTML('allowListAddSelect');
 	document.querySelector('#allowlistAdd').innerHTML = html;
-	document.querySelector('#allowListAddButton').addEventListener('click', addAllowListEntry);
 
-
+	// Forbid list select
 	html = generateExtensionAddHTML('forbidListAddSelect');
-	html += ' <button id="forbidListAddButton">Add</button>';
-
-	// Set page content
 	document.querySelector('#forbidlistAdd').innerHTML = html;
-	document.querySelector('#forbidListAddButton').addEventListener('click', addForbidListEntry);
 }
 
 function addAllowListEntry(e) {
@@ -155,7 +147,7 @@ function renderAllowList() {
 		b.className = 'remove-allow-button';
 		b.id = 'allow-' + key;
 		b.innerText = 'Remove';
-		html += '<td>' + b.outerHTML + '</td>';
+		html += '<td class="pull-right-button">' + b.outerHTML + '</td>';
 		html += '</tr>';
 	}
 	html += '</table>';
@@ -183,13 +175,17 @@ function renderForbidList() {
 		b.className = 'remove-forbid-button';
 		b.id = 'forbid-' + key;
 		b.innerText = 'Remove';
-		html += '<td>' + b.outerHTML + '</td>';
+		html += '<td class="pull-right-button">' + b.outerHTML + '</td>';
 		html += '</tr>';
 	}
 	html += '</table>';
 	document.querySelector('#forbidList').innerHTML = html;
 	document.querySelectorAll('.remove-forbid-button').forEach(removeButton => removeButton.addEventListener('click', removeForbidListEntry));
 }
+
+// Bind "Add" buttons
+document.querySelector('#allowListAddButton').addEventListener('click', addAllowListEntry);
+document.querySelector('#forbidListAddButton').addEventListener('click', addForbidListEntry);
 
 // Fetch current Twitch extension ID => name
 fetchTwitchExtensions();
