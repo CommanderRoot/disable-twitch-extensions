@@ -60,6 +60,7 @@ function fetchTwitchExtensions() {
 function generateExtensionAddHTML(id) {
 	const select = document.createElement('select');
 	select.id = id;
+	select.className = 'extension-select';
 
 	let html = '<option value=""></option>';
 	for (const [key, value] of Object.entries(extensions)) {
@@ -88,6 +89,14 @@ function generateAddButtons() {
 	// Forbid list select
 	html = generateExtensionAddHTML('forbidListAddSelect');
 	document.querySelector('#forbidlistAdd').innerHTML = html;
+
+	$('.extension-select').select2();
+	$('#allowListAddSelect').on('select2:select', function (e) {
+		addAllowListEntry(e);
+	});
+	$('#forbidListAddSelect').on('select2:select', function (e) {
+		addForbidListEntry(e);
+	});
 }
 
 function addAllowListEntry(e) {
@@ -191,10 +200,6 @@ function renderForbidList() {
 	document.querySelector('#forbidList').innerHTML = html;
 	document.querySelectorAll('.remove-forbid-button').forEach(removeButton => removeButton.addEventListener('click', removeForbidListEntry));
 }
-
-// Bind "Add" buttons
-document.querySelector('#allowListAddButton').addEventListener('click', addAllowListEntry);
-document.querySelector('#forbidListAddButton').addEventListener('click', addForbidListEntry);
 
 // Fetch current Twitch extension ID => name
 fetchTwitchExtensions();

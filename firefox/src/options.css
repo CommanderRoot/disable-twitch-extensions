@@ -1,5 +1,7 @@
 html, body {
 	width: 420px;
+	min-height: 22rem;
+	overflow-x: hidden;
 }
 
 .option {
