@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
+		<link rel="stylesheet" href="select2.min.css"/>
 		<link rel="stylesheet" href="options.css"/>
 	</head>
 	<body>
@@ -17,15 +18,33 @@
 			</div>
 
 			<div class="option">
-				<label for="allowlistAdd">Allowed:</label> <span id="allowlistAdd"></span>
+				<table>
+					<tr>
+						<td>Allowed:</td>
+						<td class="full-width">
+							<span id="allowlistAdd"></span>
+						</td>
+					</tr>
+				</table>
+
 				<div id="allowList"></div>
 			</div>
 
 			<div class="option">
-				<label for="forbidlistAdd">Forbidden:</label> <span id="forbidlistAdd"></span>
+				<table>
+					<tr>
+						<td>Forbidden:</td>
+						<td class="full-width">
+							<span id="forbidlistAdd"></span>
+						</td>
+					</tr>
+				</table>
+
 				<div id="forbidList"></div>
 			</div>
 		</form>
+		<script src="jquery-3.7.0.min.js"></script>
+		<script src="select2.min.js"></script>
 		<script src="options.js"></script>
 	</body>
 </html>

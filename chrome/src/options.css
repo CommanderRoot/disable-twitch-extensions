@@ -1,8 +1,31 @@
 html, body {
 	width: 420px;
+	min-height: 22rem;
+	overflow-x: hidden;
 }
 
 .option {
-	margin-top: 0.9em;
-	margin-bottom: 0.9em;
+	margin-top: 0.9rem;
+	margin-bottom: 0.9rem;
+}
+
+table { 
+	width: 100%;
+	padding-right: 10px;
+}
+
+select {
+	width: 100%;
+}
+
+.settings {
+	width: 97%;
+}
+
+.pull-right-button { 
+	text-align: right;
+}
+
+.full-width {
+	width: 100%;
 }

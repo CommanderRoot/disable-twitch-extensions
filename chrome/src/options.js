@@ -57,9 +57,17 @@ function fetchTwitchExtensions() {
 function generateExtensionAddHTML(id) {
 	const select = document.createElement('select');
 	select.id = id;
+	select.className = 'extension-select';
 
 	let html = '<option value=""></option>';
 	for (const [key, value] of Object.entries(extensions)) {
+		// Don't list already added extensions
+		if (
+			(id === 'allowListAddSelect' && typeof config.allowList[key] !== 'undefined') ||
+			(id === 'forbidListAddSelect' && typeof config.forbidList[key] !== 'undefined')) {
+			continue;
+		}
+
 		const opt = document.createElement('option');
 		opt.value = key;
 		opt.innerText = value;
@@ -71,20 +79,21 @@ function generateExtensionAddHTML(id) {
 }
 
 function generateAddButtons() {
-	let html = '';
-	html += generateExtensionAddHTML('allowListAddSelect');
-	html += ' <button id="allowListAddButton">Add</button>';
-
-	// Set page content
+	// Allow list select
+	let html = generateExtensionAddHTML('allowListAddSelect');
 	document.querySelector('#allowlistAdd').innerHTML = html;
-	document.querySelector('#allowListAddButton').addEventListener('click', addAllowListEntry);
 
+	// Forbid list select
 	html = generateExtensionAddHTML('forbidListAddSelect');
-	html += ' <button id="forbidListAddButton">Add</button>';
-
-	// Set page content
 	document.querySelector('#forbidlistAdd').innerHTML = html;
-	document.querySelector('#forbidListAddButton').addEventListener('click', addForbidListEntry);
+
+	$('.extension-select').select2();
+	$('#allowListAddSelect').on('select2:select', function (e) {
+		addAllowListEntry(e);
+	});
+	$('#forbidListAddSelect').on('select2:select', function (e) {
+		addForbidListEntry(e);
+	});
 }
 
 function addAllowListEntry(e) {
@@ -93,7 +102,7 @@ function addAllowListEntry(e) {
 		config.allowList[document.querySelector('#allowListAddSelect').value] = true;
 		saveOptions(e);
 		renderAllowList();
-		document.querySelector('#allowListAddSelect').value = '';
+		generateAddButtons();
 	}
 }
 
@@ -105,6 +114,7 @@ function removeAllowListEntry(e) {
 			delete config.allowList[target[1]];
 			saveOptions(e);
 			renderAllowList();
+			generateAddButtons();
 		}
 	}
 }
@@ -115,7 +125,7 @@ function addForbidListEntry(e) {
 		config.forbidList[document.querySelector('#forbidListAddSelect').value] = true;
 		saveOptions(e);
 		renderForbidList();
-		document.querySelector('#forbidListAddSelect').value = '';
+		generateAddButtons();
 	}
 }
 
@@ -127,6 +137,7 @@ function removeForbidListEntry(e) {
 			delete config.forbidList[target[1]];
 			saveOptions(e);
 			renderForbidList();
+			generateAddButtons();
 		}
 	}
 }
@@ -151,7 +162,7 @@ function renderAllowList() {
 		b.className = 'remove-allow-button';
 		b.id = 'allow-' + key;
 		b.innerText = 'Remove';
-		html += '<td>' + b.outerHTML + '</td>';
+		html += '<td class="pull-right-button">' + b.outerHTML + '</td>';
 		html += '</tr>';
 	}
 	html += '</table>';
@@ -179,7 +190,7 @@ function renderForbidList() {
 		b.className = 'remove-forbid-button';
 		b.id = 'forbid-' + key;
 		b.innerText = 'Remove';
-		html += '<td>' + b.outerHTML + '</td>';
+		html += '<td class="pull-right-button">' + b.outerHTML + '</td>';
 		html += '</tr>';
 	}
 	html += '</table>';
