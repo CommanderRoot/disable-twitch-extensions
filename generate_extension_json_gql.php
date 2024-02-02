@@ -90,7 +90,26 @@ foreach ($categories as $category) {
 	} while (!empty($cursor));
 }
 
-asort($extensions, SORT_NATURAL | SORT_FLAG_CASE);
+
+function extSort(mixed $a, mixed $b): int
+{
+	if ($a === $b) {
+		return 0;
+	}
+
+	// If neither or if both are deprecated sort them a-z
+	if ((str_starts_with($a, '[DEPRECATED] ') && str_starts_with($b, '[DEPRECATED] ')) || (!str_starts_with($a, '[DEPRECATED] ') && !str_starts_with($b, '[DEPRECATED] '))) {
+		$cmp = [$a, $b];
+		sort($cmp, SORT_NATURAL | SORT_FLAG_CASE);
+		return $cmp[0] === $a ? -1 : 1;
+	}
+
+	// If one of them is deprecated then sort the not one higher
+	return str_starts_with($b, '[DEPRECATED] ') ? -1 : 1;
+}
+
+uasort($extensions, 'extSort');
+
 
 file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . 'twitch_extensions.json', json_encode($extensions, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
