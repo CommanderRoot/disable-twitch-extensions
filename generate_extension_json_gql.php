@@ -55,7 +55,7 @@ foreach($categories as $category) {
 		echo 'Cursor: '.$cursor.PHP_EOL;
 		$curl_output = curl_exec($ch);
 		$curl_info = curl_getinfo($ch);
-		if($curl_info['http_code'] != 200) {
+		if($curl_info['http_code'] !== 200) {
 			echo 'HTTP error: '.$curl_info['http_code'];
 			echo $curl_output.PHP_EOL;
 			exit();
@@ -65,6 +65,11 @@ foreach($categories as $category) {
 		if($json_decode === null) {
 			echo 'JSON decode error'.PHP_EOL;
 			exit();
+		}
+
+		if(false && isset($json_decode['errors'])) {
+			echo $curl_output.PHP_EOL;
+			continue;
 		}
 
 		if(!isset($json_decode['data'], $json_decode['data']['extensionCategory'], $json_decode['data']['extensionCategory']['extensions'], $json_decode['data']['extensionCategory']['extensions']['edges'])) {
@@ -78,7 +83,7 @@ foreach($categories as $category) {
 			}
 
 			// Set cursor empty if we didn't have any extensions in this request
-			if(count($json_decode['data']['extensionCategory']['extensions']['edges']) == 0) {
+			if(count($json_decode['data']['extensionCategory']['extensions']['edges']) === 0) {
 				$cursor = '';
 			}
 		}
