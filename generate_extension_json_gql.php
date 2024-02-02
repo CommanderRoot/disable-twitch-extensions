@@ -1,10 +1,10 @@
 <?php
 // äöü
-echo 'Script started ...'.PHP_EOL;
+echo 'Script started ...' . PHP_EOL;
 
 $extensions = [];
-if(file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'twitch_extensions.json')) {
-	$extensions = json_decode(file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'twitch_extensions.json'), true); 
+if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'twitch_extensions.json')) {
+	$extensions = json_decode(file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'twitch_extensions.json'), true);
 }
 $old_extensions_count = count($extensions);
 $categories = [
@@ -29,8 +29,8 @@ curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
 curl_setopt($ch, CURLOPT_AUTOREFERER, false);
 curl_setopt($ch, CURLOPT_POST, true);
 
-foreach($categories as $category) {
-	echo 'Doing category '.$category.' ...'.PHP_EOL;
+foreach ($categories as $category) {
+	echo 'Doing category ' . $category . ' ...' . PHP_EOL;
 	$cursor = '';
 
 	do {
@@ -47,55 +47,54 @@ foreach($categories as $category) {
 				],
 			],
 		];
-		if(!empty($cursor)) {
+		if (!empty($cursor)) {
 			$post_array['variables']['afterCursor'] = $cursor;
 		}
 		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post_array, JSON_UNESCAPED_UNICODE));
 
-		echo 'Cursor: '.$cursor.PHP_EOL;
+		echo 'Cursor: ' . $cursor . PHP_EOL;
 		$curl_output = curl_exec($ch);
 		$curl_info = curl_getinfo($ch);
-		if($curl_info['http_code'] !== 200) {
-			echo 'HTTP error: '.$curl_info['http_code'];
-			echo $curl_output.PHP_EOL;
+		if ($curl_info['http_code'] !== 200) {
+			echo 'HTTP error: ' . $curl_info['http_code'];
+			echo $curl_output . PHP_EOL;
 			exit();
 		}
 
 		$json_decode = json_decode($curl_output, true);
-		if($json_decode === null) {
-			echo 'JSON decode error'.PHP_EOL;
+		if ($json_decode === null) {
+			echo 'JSON decode error' . PHP_EOL;
 			exit();
 		}
 
-		if(false && isset($json_decode['errors'])) {
-			echo $curl_output.PHP_EOL;
+		if (false && isset($json_decode['errors'])) {
+			echo $curl_output . PHP_EOL;
 			continue;
 		}
 
-		if(!isset($json_decode['data'], $json_decode['data']['extensionCategory'], $json_decode['data']['extensionCategory']['extensions'], $json_decode['data']['extensionCategory']['extensions']['edges'])) {
+		if (!isset($json_decode['data'], $json_decode['data']['extensionCategory'], $json_decode['data']['extensionCategory']['extensions'], $json_decode['data']['extensionCategory']['extensions']['edges'])) {
 			$cursor = '';
-			echo $curl_output.PHP_EOL;
+			echo $curl_output . PHP_EOL;
 			// exit();
 		} else {
-			foreach($json_decode['data']['extensionCategory']['extensions']['edges'] as $extension) {
+			foreach ($json_decode['data']['extensionCategory']['extensions']['edges'] as $extension) {
 				$cursor = $extension['cursor'];
 				$extensions[$extension['node']['clientID']] = $extension['node']['name'];
 			}
 
 			// Set cursor empty if we didn't have any extensions in this request
-			if(count($json_decode['data']['extensionCategory']['extensions']['edges']) === 0) {
+			if (count($json_decode['data']['extensionCategory']['extensions']['edges']) === 0) {
 				$cursor = '';
 			}
 		}
-
-	} while(!empty($cursor));
+	} while (!empty($cursor));
 }
 
-asort($extensions, SORT_NATURAL|SORT_FLAG_CASE);
+asort($extensions, SORT_NATURAL | SORT_FLAG_CASE);
 
-file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . 'twitch_extensions.json', json_encode($extensions, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
+file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . 'twitch_extensions.json', json_encode($extensions, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
 $new_extensions_count = count($extensions);
-echo 'Found '.($new_extensions_count - $old_extensions_count).' new extensions.'.PHP_EOL;
+echo 'Found ' . ($new_extensions_count - $old_extensions_count) . ' new extensions.' . PHP_EOL;
 
-echo 'Done!'.PHP_EOL;
+echo 'Done!' . PHP_EOL;
