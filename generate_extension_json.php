@@ -35,7 +35,7 @@ foreach ($json_decode['ext'] as $extension) {
 }
 
 
-function extSort(mixed $a, mixed $b): int
+function extSort(string $a, string $b): int
 {
 	if ($a === $b) {
 		return 0;
@@ -44,8 +44,8 @@ function extSort(mixed $a, mixed $b): int
 	// If neither or if both are deprecated sort them a-z
 	if ((str_starts_with($a, '[DEPRECATED] ') && str_starts_with($b, '[DEPRECATED] ')) || (!str_starts_with($a, '[DEPRECATED] ') && !str_starts_with($b, '[DEPRECATED] '))) {
 		$cmp = [$a, $b];
-		sort($cmp, SORT_NATURAL | SORT_FLAG_CASE);
-		return $cmp[0] === $a ? -1 : 1;
+		natcasesort($cmp);
+		return current($cmp) === $a ? -1 : 1;
 	}
 
 	// If one of them is deprecated then sort the not one higher
