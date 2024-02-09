@@ -31,6 +31,9 @@ if ($json_decode === null) {
 }
 
 foreach ($json_decode['ext'] as $extension) {
+	// Skip already existing extensions
+	if (isset($extensions[$extension['id']])) continue;
+
 	$extensions[$extension['id']] = $extension['name'];
 }
 
