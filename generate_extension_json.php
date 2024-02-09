@@ -58,7 +58,7 @@ function extSort(string $a, string $b): int
 uasort($extensions, 'extSort');
 
 
-file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . 'twitch_extensions.json', json_encode($extensions, JSON_UNESCAPED_UNICODE));
+file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . 'twitch_extensions.json', json_encode($extensions, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
 $new_extensions_count = count($extensions);
 echo 'Found ' . ($new_extensions_count - $old_extensions_count) . ' new extensions.' . PHP_EOL;

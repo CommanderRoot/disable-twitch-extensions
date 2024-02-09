@@ -50,7 +50,7 @@ foreach ($categories as $category) {
 		if (!empty($cursor)) {
 			$post_array['variables']['afterCursor'] = $cursor;
 		}
-		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post_array, JSON_UNESCAPED_UNICODE));
+		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post_array, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 
 		echo 'Cursor: ' . $cursor . PHP_EOL;
 		$curl_output = curl_exec($ch);
@@ -111,7 +111,7 @@ function extSort(string $a, string $b): int
 uasort($extensions, 'extSort');
 
 
-file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . 'twitch_extensions.json', json_encode($extensions, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . 'twitch_extensions.json', json_encode($extensions, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
 $new_extensions_count = count($extensions);
 echo 'Found ' . ($new_extensions_count - $old_extensions_count) . ' new extensions.' . PHP_EOL;
