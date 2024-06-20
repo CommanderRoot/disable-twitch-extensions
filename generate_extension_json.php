@@ -40,22 +40,29 @@ foreach ($json_decode['ext'] as $extension) {
 
 function extSort(string $a, string $b): int
 {
-	if ($a === $b) {
-		return 0;
-	}
+	global $extensions;
 
-	// If neither or if both are deprecated sort them a-z
-	if ((str_starts_with($a, '[DEPRECATED] ') && str_starts_with($b, '[DEPRECATED] ')) || (!str_starts_with($a, '[DEPRECATED] ') && !str_starts_with($b, '[DEPRECATED] '))) {
+	// Sort by extension ID if the names are the same
+	if ($extensions[$a] === $extensions[$b]) {
 		$cmp = [$a, $b];
 		natcasesort($cmp);
 		return current($cmp) === $a ? -1 : 1;
 	}
 
+	// If neither or if both are deprecated sort them a-z
+	if ((str_starts_with($extensions[$a], '[DEPRECATED] ') && str_starts_with($extensions[$b], '[DEPRECATED] ')) ||
+		(!str_starts_with($extensions[$a], '[DEPRECATED] ') && !str_starts_with($extensions[$b], '[DEPRECATED] '))
+	) {
+		$cmp = [$extensions[$a], $extensions[$b]];
+		natcasesort($cmp);
+		return current($cmp) === $extensions[$a] ? -1 : 1;
+	}
+
 	// If one of them is deprecated then sort the not one higher
-	return str_starts_with($b, '[DEPRECATED] ') ? -1 : 1;
+	return str_starts_with($extensions[$b], '[DEPRECATED] ') ? -1 : 1;
 }
 
-uasort($extensions, 'extSort');
+uksort($extensions, 'extSort');
 
 
 file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . 'twitch_extensions.json', json_encode($extensions, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
