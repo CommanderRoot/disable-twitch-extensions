@@ -155,7 +155,7 @@ browser.storage.onChanged.addListener((changes, namespace) => {
 		if (isDev)
 			console.log(
 				`Storage key "${key}" in namespace "${namespace}" changed.`,
-				`Old value was "${oldValue}", new value is "${newValue}".`
+				'Old value was ' + JSON.stringify(oldValue) + ', new value is ' + JSON.stringify(newValue)
 			);
 
 		if (key === 'disable') {
