@@ -49,7 +49,7 @@ function checkRequest(details) {
 
 	if (config.disable === 'all') {
 		if (isDev) console.log('Canceling extension requests: ' + details.url);
-		browser.tabs.insertCSS(details.tabId, {code: '.extension-panel, .extensions-dock__layout { display: none !important; }'});
+		browser.tabs.insertCSS(details.tabId, { code: '.extension-panel, .extensions-dock__layout { display: none !important; }' });
 		return { cancel: true };
 	} else if (config.disable === 'none') {
 		// Do nothing if we disable none
