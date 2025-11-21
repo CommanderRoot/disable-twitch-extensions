@@ -43,7 +43,7 @@ function extSort(string $a, string $b): int
 	global $extensions;
 
 	// Sort by extension ID if the names are the same
-	if ($extensions[$a] === $extensions[$b]) {
+	if (mb_strtolower(str_replace(' ', '', $extensions[$a]), 'UTF-8') === mb_strtolower(str_replace(' ', '', $extensions[$b]), 'UTF-8')) {
 		$cmp = [$a, $b];
 		natcasesort($cmp);
 		return current($cmp) === $a ? -1 : 1;
