@@ -60,6 +60,7 @@ function checkRequest(details) {
 	}
 
 	const url = new URL(details.url);
+	const anchor = url.searchParams.get('anchor');
 	const extensionID = url.hostname.split('.', 2)[0];
 	if (isDev) console.log(url);
 	if (isDev) console.log(extensionID);
@@ -77,12 +78,41 @@ function checkRequest(details) {
 		if (typeof config.allowList[extensionID] !== 'undefined' && config.allowList[extensionID] === true) {
 			return;
 		}
+
 		if (isDev) console.log('Canceling extension requests for "' + extensionID + '" as it is not in the allowed list: ' + details.url);
+
+		if (anchor === 'video_overlay' || anchor === 'component') {
+			// Hide video overlay extension dock
+			browser.tabs.insertCSS(details.tabId, {
+				code: '.extensions-dock-card:has(img[src*="' + extensionID + '"]) { display: none !important; }',
+				runAt: 'document_start',
+			});
+		} else if (anchor === 'panel') {
+			// Hide panel
+			browser.tabs.insertCSS(details.tabId, {
+				code: '.extension-panel:has(a.tw-link[href*="' + extensionID + '"]) { display: none !important; }',
+				runAt: 'document_start',
+			});
+		}
 		// Default forbid
 		return { cancel: true };
 	} else if (config.disable === 'forbidlist') {
 		if (typeof config.forbidList[extensionID] !== 'undefined' && config.forbidList[extensionID] === true) {
 			if (isDev) console.log('Canceling extension requests for "' + extensionID + '" as it is on the forbid list: ' + details.url);
+
+			if (anchor === 'video_overlay' || anchor === 'component') {
+				// Hide video overlay extension dock
+				browser.tabs.insertCSS(details.tabId, {
+					code: '.extensions-dock-card:has(img[src*="' + extensionID + '"]) { display: none !important; }',
+					runAt: 'document_start',
+				});
+			} else if (anchor === 'panel') {
+				// Hide panel
+				browser.tabs.insertCSS(details.tabId, {
+					code: '.extension-panel:has(a.tw-link[href*="' + extensionID + '"]) { display: none !important; }',
+					runAt: 'document_start',
+				});
+			}
 			return { cancel: true };
 		}
 		// Default allow
